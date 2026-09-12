@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#08090c">
+<meta name="description" content="LIMEN 阈限 — 一个关于光、形与感知的交互艺术实验。">
+<title>LIMEN 阈限 — Beyond the visible.</title>
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* LIMEN — an independent, dependency-free digital art experience. */
+:root{--ink:#08090c;--ink-soft:#111217;--paper:#eeeae3;--muted:#96949b;--line:rgba(238,234,227,.14);--accent:#b8b0dd;--warm:#c49b80;--serif:Georgia,'Times New Roman','Songti SC',serif;--sans:'Helvetica Neue',Helvetica,Arial,'PingFang SC','Microsoft YaHei',sans-serif;--mono:'SFMono-Regular',Consolas,'Liberation Mono',monospace;--gutter:clamp(24px,5.6vw,112px);--ease:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:76px;scrollbar-color:#4d4555 #08090c;scrollbar-width:thin}body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}body.locked{overflow:hidden}::selection{background:#c8bddb;color:var(--ink)}button,a{-webkit-tap-highlight-color:transparent}a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}button,a{touch-action:manipulation}button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:7px}svg{display:block}canvas{display:block}h1,h2,h3,p{margin:0}button{padding:0}em{font-weight:400}section{scroll-margin-top:0}.shell{padding-left:var(--gutter);padding-right:var(--gutter)}.micro{font:10px/1.5 var(--mono);letter-spacing:.16em;text-transform:uppercase}.muted{color:var(--muted)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.skip-link{position:fixed;top:-70px;left:24px;z-index:300;background:var(--paper);color:var(--ink);padding:14px 22px}.skip-link:focus{top:16px}.icon{width:18px;height:18px;stroke:currentColor;stroke-width:1.3;fill:none;flex:none}.arrow-diagonal{width:21px;height:21px}.dot{width:5px;height:5px;display:inline-block;border-radius:50%;background:var(--accent);box-shadow:0 0 13px rgba(184,176,221,.35)}.grain{pointer-events:none;position:fixed;inset:0;z-index:90;opacity:.035;background-size:180px 180px;background-repeat:repeat;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.7' d='M0 0h180v180H0z'/%3E%3C/svg%3E");contain:strict}.progress{position:fixed;top:0;left:0;height:2px;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,#8e84b1,#ddbe9d);z-index:150;pointer-events:none}.cursor{position:fixed;pointer-events:none;z-index:250;top:0;left:0;transform:translate(-100px,-100px);display:none;mix-blend-mode:difference}.cursor-dot{width:5px;height:5px;margin:-2.5px;border-radius:50%;background:#fff}.cursor-ring{width:34px;height:34px;margin:-17px;border:1px solid rgba(255,255,255,.48);border-radius:50%;transition:width .35s var(--ease),height .35s var(--ease),margin .35s var(--ease),background .35s,border .35s;align-items:center;justify-content:center}.cursor-ring span{font:9px var(--mono);letter-spacing:.03em;opacity:0;transition:opacity .2s;color:#111}.cursor-ring.is-link{width:52px;height:52px;margin:-26px;border-color:#fff}.cursor-ring.is-view{width:76px;height:76px;margin:-38px;background:#fff;border-color:#fff}.cursor-ring.is-view span{opacity:1}.cursor-ring.is-drag{width:70px;height:70px;margin:-35px;border-color:rgba(255,255,255,.9)}.cursor-ring.is-drag span{opacity:1;color:#fff}.has-custom-cursor,.has-custom-cursor a,.has-custom-cursor button,.has-custom-cursor [data-cursor]{cursor:none!important}.has-custom-cursor .cursor{display:flex}
+/* The opening gesture */
+.intro{position:fixed;inset:0;background:var(--ink);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:22px;pointer-events:none;transition:clip-path 1s var(--ease);clip-path:inset(0 0 0 0)}.js .intro{display:flex}.intro.is-done{clip-path:inset(0 0 100% 0)}.intro-word{font:64px var(--serif);letter-spacing:.14em;margin-left:.14em;overflow:hidden}.intro-word span{display:block;animation:introUp .85s var(--ease) both}.intro-caption{color:var(--muted);font-size:9px;animation:introUp .85s .12s var(--ease) both}.intro-line{width:132px;height:1px;background:var(--line);overflow:hidden}.intro-line:after{content:'';display:block;width:100%;height:100%;background:var(--paper);transform:translateX(-100%);animation:loadLine 1s var(--ease) forwards}@keyframes introUp{from{transform:translateY(115%);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes loadLine{to{transform:translateX(0)}}
+/* Navigation */
+.site-header{position:fixed;top:0;left:0;right:0;z-index:100;height:100px;display:flex;align-items:center;justify-content:space-between;transition:height .4s,background .4s,border-color .4s;border-bottom:1px solid transparent}.site-header.scrolled{height:76px;background:rgba(8,9,12,.78);border-color:rgba(238,234,227,.08);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}.brand{display:inline-flex;align-items:center;gap:13px}.brand-symbol{width:30px;height:30px;transition:transform .8s var(--ease)}.brand:hover .brand-symbol{transform:rotate(90deg)}.brand-name{font-size:21px;font-weight:500;letter-spacing:.21em}.brand-name sup{font:8px var(--mono);vertical-align:top;position:relative;top:2px;letter-spacing:0;margin-left:2px}.header-nav{display:flex;gap:34px;position:absolute;left:50%;transform:translateX(-50%)}.header-nav a{font-size:11px;letter-spacing:.08em;color:#b0acb4;position:relative;padding:12px 0;transition:color .3s}.header-nav a:after{content:'';position:absolute;bottom:6px;height:1px;left:0;right:0;background:var(--paper);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}.header-nav a:hover{color:var(--paper)}.header-nav a:hover:after{transform:scaleX(1)}.header-actions{display:flex;align-items:center;gap:30px}.sound-toggle{display:flex;gap:10px;align-items:center;color:#b8b5bf;font-size:10px;letter-spacing:.04em;padding:10px 0}.equalizer{display:flex;align-items:center;gap:3px;height:15px}.equalizer i{width:1px;height:3px;background:var(--paper);transition:height .3s}.sound-toggle[aria-pressed=true] .equalizer i{animation:eq .9s ease-in-out infinite alternate}.sound-toggle[aria-pressed=true] .equalizer i:nth-child(2){animation-delay:-.4s}.sound-toggle[aria-pressed=true] .equalizer i:nth-child(3){animation-delay:-.7s}.sound-toggle[aria-pressed=true] .equalizer i:nth-child(4){animation-delay:-.2s}@keyframes eq{from{height:3px}to{height:15px}}.menu-toggle{width:44px;height:44px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;transition:background .3s,border-color .3s}.menu-toggle:hover{border-color:#a39dad;background:rgba(238,234,227,.04)}.menu-toggle span{width:15px;height:1px;background:var(--paper);transition:transform .35s var(--ease)}.menu-toggle[aria-expanded=true] span:first-child{transform:translateY(3px) rotate(45deg)}.menu-toggle[aria-expanded=true] span:last-child{transform:translateY(-3px) rotate(-45deg)}
+/* Hero */
+.hero{height:100svh;min-height:790px;max-height:1200px;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 78% 41%,#181622 0,rgba(18,17,25,.4) 24%,transparent 48%),var(--ink)}.hero:after{content:'';position:absolute;left:var(--gutter);right:var(--gutter);bottom:0;height:1px;background:var(--line)}.hero-grid{position:absolute;inset:0;background-image:linear-gradient(to right,transparent calc(50% - .5px),rgba(238,234,227,.035) 50%,transparent calc(50% + .5px));background-size:50% 100%;pointer-events:none;opacity:.5}.hero-copy{position:relative;z-index:3;padding-top:clamp(194px,24vh,300px);width:62%;pointer-events:none}.hero-copy a{pointer-events:auto}.eyebrow{display:flex;align-items:center;gap:12px;font-size:9px;letter-spacing:.18em;color:#aaa5b3;margin-bottom:38px}.eyebrow-line{width:29px;height:1px;background:#807a8d}.hero-title{font-family:var(--serif);font-weight:400;font-size:clamp(96px,10.05vw,178px);line-height:.92;letter-spacing:-.065em;white-space:nowrap}.hero-title .title-line{display:block;overflow:hidden;padding:0 .06em .11em 0;margin-bottom:-.1em}.hero-title .title-line>span{display:block}.hero-title em{color:#cdc4d5;letter-spacing:-.076em}.hero-description{color:#aaa5ae;font-size:12px;line-height:2.05;letter-spacing:.06em;margin-top:32px;max-width:355px}.hero-cta{display:inline-flex;align-items:center;gap:33px;background:var(--paper);color:#17151b;padding:18px 23px;border-radius:100px;font-size:11px;letter-spacing:.07em;margin-top:30px;transition:background .3s,box-shadow .3s;will-change:transform}.hero-cta:hover{background:#fff;box-shadow:0 0 50px rgba(200,187,221,.13)}.hero-cta .icon{width:17px;height:17px;transition:transform .4s var(--ease)}.hero-cta:hover .icon{transform:rotate(45deg)}.hero-stage{position:absolute;right:-4%;top:7%;width:67%;height:82%;z-index:2;touch-action:pan-y;outline-offset:-32px!important}.hero-stage.dragging{touch-action:none}.sculpture-aura{position:absolute;inset:13% 6% 10% 10%;border-radius:50%;background:radial-gradient(ellipse at 61% 32%,rgba(85,72,141,.19),transparent 51%),radial-gradient(ellipse at 36% 71%,rgba(161,92,57,.065),transparent 43%);filter:blur(25px);transition:background 1s;pointer-events:none}.art-canvas{width:100%;height:100%;position:absolute;inset:0;z-index:2}.art-fallback{position:absolute;inset:15%;display:grid;place-items:center;z-index:1}.fallback-ring{width:78%;aspect-ratio:1;border:clamp(30px,5vw,80px) solid transparent;border-radius:50%;background:linear-gradient(140deg,#e9dfd6,#7c7495 20%,#181824 43%,#bda1a2 62%,#252935 78%,#ddcbb7) border-box;mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);mask-composite:exclude;-webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;transform:rotate(-34deg) rotateY(25deg);box-shadow:inset 0 0 20px #fff}.has-webgl .art-fallback{display:none}.orbital-guide{position:absolute;width:88%;height:88%;top:4%;left:5%;opacity:.4;pointer-events:none;z-index:1;transform:rotate(-24deg)}.orbital-guide ellipse{fill:none;stroke:#96909d;stroke-width:.45;stroke-dasharray:2 9}.orbital-guide .guide-solid{stroke-dasharray:none;stroke-opacity:.28}.stage-corner{position:absolute;font:8px var(--mono);letter-spacing:.16em;color:#756e80;z-index:4;pointer-events:none}.stage-corner.tl{top:13%;left:25%}.stage-corner.br{bottom:17%;right:12%;writing-mode:vertical-rl}.stage-caption{position:absolute;z-index:4;right:12%;top:34%;display:flex;align-items:center;gap:11px;font-size:8px;letter-spacing:.14em;color:#b8aabc;pointer-events:none}.stage-caption:before{content:'';height:1px;width:45px;background:linear-gradient(90deg,transparent,#716277)}.stage-caption:after{content:'+';position:absolute;left:-8px;top:-3px;color:#b8aabc}.stage-shadow{position:absolute;bottom:6%;left:28%;width:44%;height:6%;background:radial-gradient(ellipse,rgba(147,113,148,.1),transparent 70%);filter:blur(11px);pointer-events:none}.material-control{position:absolute;right:18.5%;bottom:14%;z-index:5;display:flex;align-items:center;gap:15px}.material-control-label{font:8px var(--mono);letter-spacing:.17em;color:#8d839a;margin-right:6px;min-width:45px;text-align:right}.material-swatch{position:relative;width:17px;height:17px;border-radius:50%;padding:3px;display:grid;place-items:center;border:1px solid transparent;transition:border-color .3s,transform .3s}.material-swatch:after{content:'';width:9px;height:9px;background:var(--swatch);border-radius:50%;display:block}.material-swatch[aria-pressed=true]{border-color:#d5c6e5;transform:scale(1.15)}.material-swatch:hover{transform:scale(1.25)}.stage-hint{position:absolute;right:13%;bottom:8%;display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:.08em;color:#756c82;z-index:4;pointer-events:none}.stage-hint svg{width:12px;height:12px}.hero-bottom{position:absolute;bottom:34px;left:var(--gutter);right:var(--gutter);z-index:4;display:flex;justify-content:space-between;align-items:center}.scroll-cue{display:flex;gap:16px;align-items:center;font-size:9px;color:#b4aeba;letter-spacing:.08em}.scroll-cue .scroll-track{height:34px;width:20px;border:1px solid #49414f;border-radius:14px;position:relative}.scroll-track:after{content:'';position:absolute;width:2px;height:7px;background:#c6b8d1;left:8px;top:7px;animation:scrollDown 2s ease infinite}@keyframes scrollDown{0%{transform:translateY(0);opacity:0}25%{opacity:1}85%,100%{transform:translateY(10px);opacity:0}}.hero-bottom .live-note{display:flex;align-items:center;gap:8px;font-size:8px;color:#827b8c}.hero-bottom .live-note .dot{width:4px;height:4px;animation:pulse 3s ease infinite}@keyframes pulse{50%{opacity:.35}}.page-index{display:flex;align-items:center;gap:13px;font-size:9px;color:#a89ab0}.page-index span:first-child{color:#e4d8e9}.page-index:before{content:'';width:38px;height:1px;background:var(--line);margin-right:10px}.js .hero .enter{opacity:0;transform:translateY(22px);transition:opacity 1.2s var(--ease),transform 1.4s var(--ease)}.js .hero .hero-title .title-line>span{transform:translateY(115%);transition:transform 1.5s var(--ease)}.js .hero .hero-stage{opacity:0;transform:translateY(30px) scale(.93);transition:opacity 2s var(--ease),transform 2.2s var(--ease)}.is-ready .hero .enter{opacity:1;transform:translateY(0)}.is-ready .hero .hero-title .title-line>span{transform:translateY(0)}.is-ready .hero .hero-title .title-line:nth-child(2)>span{transition-delay:.11s}.is-ready .hero .hero-stage{opacity:1;transform:none}.hero .enter.delay-1{transition-delay:.2s}.hero .enter.delay-2{transition-delay:.4s}.hero .enter.delay-3{transition-delay:.6s}
+/* Editorial interlude */
+.interlude{padding-top:108px;padding-bottom:108px;display:grid;grid-template-columns:1fr 2.18fr;gap:50px;align-items:start;position:relative}.section-kicker{display:flex;align-items:center;gap:12px;color:#8d8895;font-size:9px;letter-spacing:.12em}.section-kicker .section-number{color:#e0d6e4}.interlude .section-kicker{padding-top:13px}.interlude-copy{font-size:clamp(28px,3.35vw,49px);font-weight:400;line-height:1.65;letter-spacing:.03em}.interlude-copy .soft{color:#615b68}.interlude-copy .reveal-word{transition:color .8s}.interlude-copy.is-inview .reveal-word{color:var(--paper)}.interlude-copy.is-inview .reveal-word:nth-child(2){transition-delay:.2s}.interlude-copy .last{font-family:var(--serif);font-style:italic;font-size:1.04em;letter-spacing:-.025em;color:#aca0ba}.interlude-foot{font-size:10px;letter-spacing:.08em;color:#87808e;display:flex;align-items:center;gap:22px;margin-top:26px}.interlude-foot:before{content:'';height:1px;width:40px;background:#5d5366}.section-rule{height:1px;background:var(--line);margin:0 var(--gutter)}
+/* Selected experiments */
+.works{padding-top:92px;padding-bottom:118px;overflow:hidden}.works-topline{display:flex;align-items:center;justify-content:space-between;margin-bottom:31px}.works-topline .micro{color:#78717f;font-size:8px}.works-heading-row{display:flex;align-items:end;justify-content:space-between;margin-bottom:55px;gap:30px}.section-title{font:400 clamp(62px,7.15vw,110px)/.97 var(--serif);letter-spacing:-.052em}.section-title em{color:#bdb0c8}.works-intro{font-size:11px;line-height:1.95;color:#908896;max-width:225px;padding-bottom:5px;letter-spacing:.055em}.works-intro .icon{margin-top:20px;width:29px;height:16px;color:#b2a3bd}.work-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:25px}.work-card{display:block;text-align:left;width:100%;position:relative;min-width:0}.work-card:nth-child(2){margin-top:60px}.work-card:nth-child(3){margin-top:120px}.work-art{height:clamp(300px,31.5vw,520px);width:100%;position:relative;overflow:hidden;background:#14131c;border:1px solid rgba(230,218,240,.08);transition:transform .8s var(--ease),border-color .5s;isolation:isolate}.work-card:hover .work-art{transform:translateY(-9px);border-color:rgba(230,218,240,.3)}.work-art:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 55% 45%,var(--art-glow),transparent 70%);z-index:0}.work-art:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,9,12,.26),transparent 40%);pointer-events:none;z-index:3}.work-card:nth-child(1) .work-art{--art-glow:#2b223d;background:#131019}.work-card:nth-child(2) .work-art{--art-glow:#36332d;background:#161613}.work-card:nth-child(3) .work-art{--art-glow:#542d23;background:#1c1412}.work-art .art-canvas{transition:transform 1s var(--ease)}.work-card:hover .art-canvas{transform:scale(1.05)}.work-art .art-fallback{inset:25% 13%;opacity:.9}.work-card:nth-child(1) .fallback-ring{border-radius:50%;mask:none;-webkit-mask:none;box-shadow:inset -24px -20px 55px #100b1e,inset 8px 5px 20px #b0a0c8}.work-card:nth-child(3) .fallback-ring{border-radius:22%;mask:none;-webkit-mask:none;background:linear-gradient(120deg,#c0a786,#622815,#1f1314);box-shadow:inset -15px -10px 30px #250e0a}.art-coordinate{position:absolute;z-index:4;left:20px;top:21px;font-size:8px;letter-spacing:.13em;color:#a095ad}.art-open-icon{position:absolute;right:17px;top:17px;width:26px;height:26px;border:1px solid rgba(238,234,227,.25);border-radius:50%;display:grid;place-items:center;z-index:4;transition:background .3s,color .3s,transform .5s}.art-open-icon .icon{width:12px;height:12px}.work-card:hover .art-open-icon{background:var(--paper);color:var(--ink);transform:rotate(45deg)}.art-badge{position:absolute;left:20px;bottom:21px;z-index:4;font:8px var(--mono);letter-spacing:.18em;color:#b3a3c0;display:flex;align-items:center;gap:8px}.art-badge:before{content:'';height:4px;width:4px;background:currentColor;border-radius:50%}.work-card:nth-child(2) .art-coordinate,.work-card:nth-child(2) .art-badge{color:#b4ad9c}.work-card:nth-child(3) .art-coordinate,.work-card:nth-child(3) .art-badge{color:#c79d88}.art-orbit{position:absolute;inset:17%;width:66%;height:66%;fill:none;stroke:rgba(209,190,223,.16);stroke-width:.6;z-index:1}.work-caption{display:flex;align-items:start;justify-content:space-between;padding-top:23px;gap:8px}.work-caption h3{font:400 clamp(25px,2.5vw,39px)/1 var(--serif);letter-spacing:-.045em;transition:color .3s}.work-card:hover h3{color:#c4b3d5}.work-caption p{margin-top:10px;font-size:10px;letter-spacing:.06em;color:#8d8495}.work-caption .work-year{font:8px var(--mono);letter-spacing:.08em;color:#706977;padding-top:5px}.works-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:75px;padding-top:25px;border-top:1px solid var(--line);font-size:9px;letter-spacing:.1em;color:#857a91}.works-bottom .works-count{display:flex;gap:8px;align-items:center}.works-bottom .tiny-bar{height:1px;width:70px;background:var(--line);position:relative}.works-bottom .tiny-bar:after{content:'';height:1px;position:absolute;left:0;top:0;width:100%;background:#9e8aaf}.inline-link{display:inline-flex;align-items:center;gap:10px;transition:color .3s}.inline-link:hover{color:var(--paper)}.inline-link .icon{width:13px;height:13px}
+/* A breath of paper */
+.philosophy{background:var(--paper);color:#252329;padding-top:74px;padding-bottom:88px;position:relative;overflow:hidden}.philosophy .section-kicker{color:#756f74}.philosophy .section-number{color:#252329}.philosophy-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:29px;border-bottom:1px solid rgba(31,28,35,.2)}.philosophy-top>.micro{color:#827980;font-size:8px}.philosophy-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:12%;padding-top:77px}.philosophy-title{font:400 clamp(83px,9.8vw,158px)/.9 var(--serif);letter-spacing:-.065em}.philosophy-title em{color:#946d5d}.philosophy-title .indent{padding-left:.2em}.philosophy-copy{padding-top:12px}.philosophy-lead{font-size:clamp(18px,1.55vw,25px);line-height:1.9;letter-spacing:.025em;font-weight:400;color:#49424a}.philosophy-note{font-size:10px;color:#8a7e86;letter-spacing:.04em;line-height:1.8;margin-top:20px}.principles{margin-top:49px;border-top:1px solid rgba(31,28,35,.2)}.principle{border-bottom:1px solid rgba(31,28,35,.2)}.principle-trigger{display:flex;align-items:center;justify-content:space-between;width:100%;padding:22px 0;gap:16px;text-align:left;font-size:13px;font-weight:400;letter-spacing:.02em}.principle-num{font:9px var(--mono);color:#9a8483;align-self:center;min-width:26px}.principle-label{flex:1}.principle-mark{width:13px;height:13px;position:relative;flex:none}.principle-mark:before,.principle-mark:after{content:'';position:absolute;left:0;top:6px;height:1px;width:13px;background:#73626b;transition:transform .4s}.principle-mark:after{transform:rotate(90deg)}.principle-trigger[aria-expanded=true] .principle-mark:after{transform:rotate(0)}.principle-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s var(--ease)}.principle.open .principle-body{grid-template-rows:1fr}.principle-body>div{overflow:hidden}.principle-body p{font-size:11px;line-height:2;color:#82747c;padding:0 29px 23px 42px}.philosophy-mark{display:flex;align-items:center;gap:24px;margin-top:54px}.philosophy-mark svg{width:92px;height:92px;fill:none;stroke:#9a7e72;stroke-width:.6}.philosophy-mark p{font:8px/1.9 var(--mono);letter-spacing:.12em;color:#9a8884}.marquee{background:var(--paper);color:#3d333a;overflow:hidden;padding:30px 0 37px;border-top:1px solid rgba(31,28,35,.16);user-select:none}.marquee-track{display:flex;align-items:center;gap:45px;width:max-content;animation:marquee 35s linear infinite}.marquee-text{font:italic 69px/1.1 var(--serif);letter-spacing:-.04em;white-space:nowrap}.marquee-symbol{font:50px var(--serif);color:#a48675;margin:0 30px}@keyframes marquee{to{transform:translateX(-50%)}}.marquee:hover .marquee-track{animation-play-state:paused}
+/* The participatory piece */
+.playground{position:relative;min-height:830px;height:94svh;max-height:1050px;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 50% 80%,#11121b,transparent 65%),var(--ink)}.ripple-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}.playground:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(var(--ink) 0%,transparent 25%,transparent 75%,var(--ink) 100%);z-index:2}.playground-content{position:relative;z-index:3;text-align:center;padding-top:102px;pointer-events:none}.playground-content .section-kicker{justify-content:center;margin-bottom:34px}.playground-title{font:400 clamp(65px,6.8vw,108px)/1 var(--serif);letter-spacing:-.055em}.playground-title em{color:#c5b0ba}.playground-content>p{font-size:11px;letter-spacing:.075em;line-height:2;color:#867e90;margin-top:26px}.ripple-trigger{pointer-events:auto;width:60px;height:60px;display:grid;place-items:center;margin:46px auto 0;border:1px solid rgba(202,178,212,.3);background:rgba(8,9,12,.4);border-radius:50%;position:relative;transition:border-color .3s,background .3s,transform .3s}.ripple-trigger:hover{border-color:#c5aecf;background:rgba(107,78,134,.2);transform:scale(1.08)}.ripple-trigger:before{content:'';position:absolute;inset:-11px;border:1px solid rgba(202,178,212,.08);border-radius:50%;animation:quietRing 3s ease-in-out infinite}.ripple-trigger svg{width:20px;height:20px;stroke:#c5b0d1;stroke-width:1}@keyframes quietRing{50%{transform:scale(1.12);opacity:.3}}.ripple-trigger-label{display:block;font:8px var(--mono);letter-spacing:.14em;color:#7b6c88;margin-top:26px}.playground-bottom{position:absolute;z-index:4;left:var(--gutter);right:var(--gutter);bottom:52px;display:flex;align-items:end;justify-content:space-between;gap:25px;pointer-events:none}.playground-bottom>div{pointer-events:auto}.mood-control{display:flex;align-items:center;gap:20px}.mood-title{font:8px var(--mono);letter-spacing:.15em;color:#726579}.mood-options{display:flex;gap:4px;padding:5px;border:1px solid rgba(197,174,216,.14);border-radius:60px;background:rgba(12,11,17,.52);backdrop-filter:blur(12px)}.mood-button{padding:11px 19px;border-radius:30px;font-size:10px;letter-spacing:.08em;color:#7d7089;transition:background .4s,color .4s}.mood-button[aria-pressed=true]{background:#d2c4da;color:#17111e}.mood-button:hover{color:#ded0e7}.mood-button[aria-pressed=true]:hover{color:#17111e}.interaction-tally{text-align:right;font:8px/1.8 var(--mono);letter-spacing:.13em;color:#74657c}.interaction-tally strong{font-weight:400;color:#b49bc5}.interaction-tally span{display:block;font-family:var(--sans);letter-spacing:.055em;font-size:9px;color:#65586e;margin-top:4px}
+/* Footer */
+.footer{padding-top:34px;padding-bottom:30px;overflow:hidden;position:relative}.footer-top{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:26px;color:#82778a;font-size:10px;letter-spacing:.06em}.footer-top .inline-link{color:#b7a4c4}.footer-wordmark{font-family:var(--sans);font-size:clamp(140px,23vw,460px);font-weight:500;letter-spacing:-.085em;line-height:1.08;margin-left:-.025em;margin-top:25px;color:#ded5e1;position:relative;user-select:none}.footer-wordmark .asterisk{font:400 .41em var(--serif);position:absolute;top:.10em;margin-left:.1em;color:#b5a0c1;transition:transform 1s var(--ease)}.footer-wordmark:hover .asterisk{transform:rotate(180deg)}.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:26px;border-top:1px solid var(--line);gap:20px;font-size:8px;color:#6f6278;letter-spacing:.12em}.footer-bottom .clock{display:flex;align-items:center;gap:9px;white-space:nowrap}.footer-bottom .clock time{color:#ac95bb;min-width:59px}.motion-toggle{display:flex;align-items:center;gap:7px;color:#9782a5;font-size:9px;letter-spacing:.02em}.motion-toggle .icon{width:10px;height:10px}
+/* Overlays */
+.menu-panel{position:fixed;inset:0;z-index:99;background:#111017;clip-path:inset(0 0 100% 0);visibility:hidden;transition:clip-path .85s var(--ease),visibility .85s;overflow-y:auto}.menu-panel.open{clip-path:inset(0 0 0 0);visibility:visible}.menu-inner{min-height:100%;padding-top:150px;padding-bottom:45px;display:flex;flex-direction:column}.menu-label{color:#76697f;margin-bottom:26px}.menu-links{display:flex;flex-direction:column;flex:1;justify-content:center}.menu-link{display:flex;align-items:center;gap:30px;padding:10px 0;max-width:1000px;border-bottom:1px solid rgba(208,184,225,.1);transform:translateY(50px);opacity:0;transition:transform .8s var(--ease),opacity .5s,color .3s}.menu-panel.open .menu-link{transform:none;opacity:1}.menu-panel.open .menu-link:nth-child(2){transition-delay:.07s}.menu-panel.open .menu-link:nth-child(3){transition-delay:.14s}.menu-panel.open .menu-link:nth-child(4){transition-delay:.21s}.menu-link .micro{font-size:9px;color:#7c678c}.menu-link .menu-en{font:400 clamp(52px,6.5vw,95px)/1.17 var(--serif);letter-spacing:-.045em;transition:transform .5s var(--ease)}.menu-link:hover .menu-en{transform:translateX(16px);color:#c2a9d5;font-style:italic}.menu-link .menu-cn{font-size:10px;color:#867391;margin-left:auto}.menu-foot{display:flex;justify-content:space-between;margin-top:45px;color:#685771;font-size:8px;letter-spacing:.1em}.project-dialog{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;padding:0;background:#0e0d12;color:var(--paper);z-index:160;overflow:auto}.project-dialog::backdrop{background:rgba(0,0,0,.8)}.project-dialog[open]{animation:dialogIn .55s var(--ease)}@keyframes dialogIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}.dialog-top{height:94px;display:flex;align-items:center;justify-content:space-between;padding:0 var(--gutter);border-bottom:1px solid var(--line)}.dialog-top .micro{font-size:9px;color:#a18ba8}.close-dialog{display:flex;align-items:center;gap:12px;font-size:10px;color:#b9a6c2;padding:10px 0}.close-circle{width:36px;height:36px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;transition:background .3s}.close-dialog:hover .close-circle{background:#302637}.close-circle .icon{width:13px;height:13px}.dialog-layout{min-height:calc(100svh - 94px);display:grid;grid-template-columns:1.25fr 1fr;align-items:center;gap:6vw;padding:40px var(--gutter) 55px}.dialog-art{height:min(69vw,680px);max-height:76svh;position:relative;background:radial-gradient(ellipse,#2b2135,transparent 70%);touch-action:pan-y}.dialog-art .art-canvas{z-index:2}.dialog-art .micro{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:#877091;z-index:4;white-space:nowrap;font-size:8px}.dialog-index{font-size:9px;color:#8a6c9a;margin-bottom:27px}.dialog-title{font:400 clamp(55px,5.5vw,86px)/1 var(--serif);letter-spacing:-.05em;margin-bottom:15px}.dialog-subtitle{font-size:15px;letter-spacing:.1em;color:#bda7c8}.dialog-description{font-size:12px;line-height:2.2;color:#918298;margin-top:30px;max-width:340px;letter-spacing:.035em}.dialog-specs{display:grid;grid-template-columns:1fr 1fr;gap:25px;border-top:1px solid var(--line);margin-top:30px;padding-top:21px;max-width:355px}.dialog-specs dt{font:8px var(--mono);letter-spacing:.1em;color:#786381;margin-bottom:8px}.dialog-specs dd{font-size:10px;margin:0;color:#b49dc0}.dialog-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}.dialog-button{display:flex;align-items:center;gap:12px;border:1px solid #514256;padding:14px 18px;border-radius:30px;font-size:10px;color:#cbb9d4;transition:background .3s,border-color .3s}.dialog-button:hover{background:#302138;border-color:#987ba7}.dialog-button.primary{background:var(--paper);color:#1b1520;border-color:var(--paper)}.dialog-button.primary:hover{background:#fff}.dialog-button .icon{width:14px;height:14px}.toast{position:fixed;z-index:220;left:50%;bottom:35px;max-width:calc(100% - 40px);transform:translate(-50%,20px);padding:15px 24px;border:1px solid rgba(222,206,232,.2);border-radius:60px;background:rgba(33,26,41,.94);backdrop-filter:blur(15px);font-size:11px;line-height:1.6;color:#e4d5eb;text-align:center;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;box-shadow:0 10px 50px rgba(0,0,0,.2)}.toast.show{opacity:1;transform:translate(-50%,0)}
+/* Shared reveal and adaptive layouts */
+.js .reveal{opacity:0;transform:translateY(34px);transition:opacity 1s var(--ease),transform 1.2s var(--ease)}.js .reveal.is-inview{opacity:1;transform:none}.reveal.delay-1{transition-delay:.10s}.reveal.delay-2{transition-delay:.2s}
+@media(min-width:1800px){.hero-stage{right:0;width:64%}.hero-copy{padding-top:26vh}.hero-title{font-size:min(10vw,200px)}.hero-description{font-size:14px}.hero-cta{font-size:13px}.work-art{height:530px}}
+@media(max-width:1100px){.hero{min-height:750px}.hero-copy{padding-top:24vh}.hero-title{font-size:10.5vw}.hero-stage{width:74%;right:-11%;height:80%;top:8%}.hero-description{font-size:11px;max-width:310px}.stage-caption{right:17%}.material-control{right:24%;bottom:12%}.stage-hint{right:19%;bottom:6%}.work-grid{gap:18px}.work-art{height:340px}.work-caption h3{font-size:28px}.philosophy-grid{gap:7%}.philosophy-title{font-size:10.7vw}.mood-control{gap:13px}.header-nav{gap:23px}.dialog-layout{gap:3vw}.dialog-title{font-size:60px}}
+@media(max-width:760px){:root{--gutter:24px}.site-header{height:78px}.site-header.scrolled{height:68px}.brand-symbol{width:24px;height:24px}.brand{gap:9px}.brand-name{font-size:18px}.header-nav{display:none}.header-actions{gap:19px}.sound-toggle{font-size:9px}.menu-toggle{width:38px;height:38px}.hero{height:990px;min-height:950px;max-height:none;background:radial-gradient(ellipse at 70% 56%,#191522,transparent 55%),var(--ink)}.hero-copy{padding-top:142px;width:100%}.eyebrow{font-size:8px;margin-bottom:26px;gap:9px}.eyebrow-line{width:21px}.hero-title{font-size:clamp(80px,15.3vw,115px);letter-spacing:-.061em}.hero-description{font-size:11px;line-height:1.9;max-width:315px;margin-top:26px}.hero-cta{padding:15px 19px;margin-top:23px;font-size:10px;gap:26px}.hero-stage{width:112%;height:500px;top:auto;bottom:75px;right:-14%}.hero-stage .orbital-guide{width:87%;left:2%;top:1%;height:96%}.stage-corner.tl{top:15%;left:19%;font-size:7px}.stage-corner.br{right:18%;bottom:18%;font-size:6px}.stage-caption{top:30%;right:20%;font-size:7px}.stage-caption:before{width:23px}.material-control{right:27%;bottom:111px;gap:13px}.stage-hint{right:22%;bottom:83px;font-size:8px}.sculpture-aura{inset:16% 16% 5% 15%}.hero-bottom{bottom:26px}.hero-bottom .live-note{display:none}.scroll-cue{font-size:8px;gap:10px}.scroll-cue .scroll-track{width:18px;height:28px}.scroll-track:after{left:7px}.page-index{font-size:8px}.page-index:before{width:23px}.interlude{padding-top:66px;padding-bottom:68px;grid-template-columns:1fr;gap:30px}.interlude .section-kicker{padding-top:0}.interlude-copy{font-size:clamp(26px,5.7vw,39px);line-height:1.8}.interlude-foot{font-size:9px;margin-top:22px;gap:15px}.section-kicker{font-size:8px}.works{padding-top:61px;padding-bottom:67px}.works-topline{margin-bottom:31px}.works-topline>.micro{font-size:7px}.section-title{font-size:clamp(57px,12vw,88px)}.works-heading-row{display:block;margin-bottom:35px}.works-intro{margin-top:24px;max-width:none;font-size:10px}.works-intro br{display:none}.works-intro .icon{display:none}.work-grid{grid-template-columns:repeat(3,minmax(270px,78vw));gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:10px 24px 16px;margin:0 -24px;align-items:start}.work-grid::-webkit-scrollbar{display:none}.work-card{scroll-snap-align:center}.work-card:nth-child(2),.work-card:nth-child(3){margin-top:0}.work-art{height:365px}.work-caption{padding-top:20px}.work-caption h3{font-size:32px}.work-caption p{font-size:10px}.work-caption .work-year{font-size:8px}.works-bottom{margin-top:27px;padding-top:22px;font-size:8px}.works-count .tiny-bar{width:38px}.philosophy{padding-top:43px;padding-bottom:56px}.philosophy-top>.micro{font-size:6px;max-width:123px;text-align:right;line-height:1.6}.philosophy-grid{grid-template-columns:1fr;padding-top:43px;gap:36px}.philosophy-title{font-size:clamp(83px,18vw,130px);line-height:.9}.philosophy-title .indent{padding-left:.12em}.philosophy-mark{display:none}.philosophy-copy{padding-top:0}.philosophy-lead{font-size:18px;line-height:1.85;max-width:490px}.philosophy-note{font-size:10px}.principles{margin-top:29px}.principle-trigger{padding:20px 0;font-size:13px}.principle-body p{font-size:11px}.marquee{padding:21px 0 25px}.marquee-track{gap:25px;animation-duration:28s}.marquee-text{font-size:47px}.marquee-symbol{font-size:36px;margin:0 8px}.playground{height:800px;min-height:800px;max-height:none}.playground-content{padding-top:80px}.playground-content .section-kicker{margin-bottom:28px}.playground-title{font-size:clamp(52px,10.5vw,78px)}.playground-content>p{font-size:10px;max-width:270px;margin:23px auto 0;line-height:1.95}.ripple-trigger{margin-top:39px;width:55px;height:55px}.playground-bottom{bottom:41px;flex-direction:column;align-items:center;gap:28px}.mood-control{gap:12px;flex-direction:column}.mood-title{font-size:7px}.mood-button{padding:10px 20px;font-size:10px}.interaction-tally{text-align:center;font-size:8px}.interaction-tally span{display:none}.footer{padding-top:15px;padding-bottom:27px}.footer-top{font-size:9px;padding-top:25px}.footer-wordmark{font-size:23vw;margin-top:29px;line-height:1.4}.footer-bottom{padding-top:23px;display:grid;grid-template-columns:1fr auto;row-gap:19px;font-size:7px}.footer-bottom>.micro{grid-column:1/-1;font-size:7px}.footer-bottom .clock{grid-row:2;grid-column:1}.footer-bottom .motion-toggle{grid-column:2;grid-row:2;font-size:9px}.menu-inner{padding-top:115px;padding-bottom:35px}.menu-link{gap:19px;padding:17px 0}.menu-link .menu-en{font-size:51px}.menu-link .menu-cn{font-size:9px}.menu-link .micro{font-size:8px}.menu-label{font-size:8px}.menu-foot{font-size:7px;gap:15px;line-height:1.8}.dialog-top{height:74px}.dialog-top>.micro{font-size:8px}.dialog-layout{display:flex;flex-direction:column;padding-top:10px;padding-bottom:40px;gap:15px;align-items:stretch}.dialog-art{width:100%;height:350px;flex:none;max-height:none}.dialog-info{padding-top:10px}.dialog-index{font-size:8px;margin-bottom:18px}.dialog-title{font-size:54px}.dialog-subtitle{font-size:13px}.dialog-description{font-size:11px;margin-top:22px;max-width:none}.dialog-specs{max-width:none;margin-top:23px}.dialog-actions{margin-top:25px}.toast{font-size:10px;padding:13px 20px;bottom:24px;width:max-content}.grain{opacity:.025}}
+@media(max-width:380px){.hero{height:930px;min-height:930px}.hero-copy{padding-top:128px}.hero-title{font-size:14.9vw}.hero-stage{height:445px;bottom:75px}.hero-description{font-size:10px;max-width:280px}.sound-toggle .sound-label{display:none}.header-actions{gap:14px}.work-grid{grid-template-columns:repeat(3,82vw)}.work-art{height:335px}.menu-link .menu-en{font-size:43px}.menu-link{gap:12px}.playground-title{font-size:48px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.intro{display:none!important}.js .hero .enter,.js .hero .hero-stage,.js .reveal{opacity:1!important;transform:none!important}.js .hero .hero-title .title-line>span{transform:none!important}.cursor{display:none!important}.has-custom-cursor,.has-custom-cursor a,.has-custom-cursor button,.has-custom-cursor [data-cursor]{cursor:auto!important}}
+body.motion-paused *:not(.intro):not(.intro *),body.motion-paused *:before,body.motion-paused *:after{animation-play-state:paused!important}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳转到主要内容</a>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 19 19 5M5 5h14v14"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v16m-7-7 7 7 7-7"/></symbol>
+<symbol id="i-right" viewBox="0 0 30 18"><path d="M1 9h27m-7-7 7 7-7 7"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></symbol>
+<symbol id="i-drag" viewBox="0 0 24 24"><path d="m5 8-4 4 4 4m14-8 4 4-4 4M2 12h20"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2"/></symbol>
+<symbol id="i-pause" viewBox="0 0 14 14"><path d="M4 2v10M10 2v10"/></symbol>
+<symbol id="i-play" viewBox="0 0 14 14"><path d="m4 2 8 5-8 5Z"/></symbol>
+<symbol id="i-spark" viewBox="0 0 40 40"><path d="M20 2c0 12-6 18-18 18 12 0 18 6 18 18 0-12 6-18 18-18C26 20 20 14 20 2Z" fill="currentColor"/></symbol>
+</defs></svg>
+<div class="intro" aria-hidden="true"><div class="intro-word"><span>LIMEN</span></div><div class="intro-line"></div><div class="intro-caption micro">A moment before the extraordinary.</div></div>
+<div class="grain" aria-hidden="true"></div><div class="progress" aria-hidden="true"></div>
+<div class="cursor cursor-dot" aria-hidden="true"></div><div class="cursor cursor-ring" aria-hidden="true"><span></span></div>
+<header class="site-header shell">
+  <a class="brand" href="#home" aria-label="LIMEN 阈限，返回首页" data-magnetic><svg class="brand-symbol" viewBox="0 0 40 40" aria-hidden="true"><use href="#i-spark"/></svg><span class="brand-name">LIMEN<sup>®</sup></span></a>
+  <nav class="header-nav" aria-label="主导航"><a href="#experiments">精选实验</a><a href="#philosophy">设计哲学</a><a href="#playground">感官游乐场</a></nav>
+  <div class="header-actions"><button class="sound-toggle" type="button" aria-pressed="false" aria-label="开启环境声音"><span class="equalizer" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sound-label">声音关闭</span></button><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-panel" aria-label="打开导航菜单" data-magnetic><span></span><span></span></button></div>
+</header>
+<div class="menu-panel" id="menu-panel" role="dialog" aria-label="全屏导航" aria-modal="true" inert>
+  <div class="menu-inner shell"><div class="menu-label micro">The directory / 感知的四个章节</div><nav class="menu-links" aria-label="完整导航">
+    <a class="menu-link" href="#home"><span class="micro">00</span><span class="menu-en">The beginning.</span><span class="menu-cn">感知的起点 ↗</span></a>
+    <a class="menu-link" href="#experiments"><span class="micro">01</span><span class="menu-en">Experiments.</span><span class="menu-cn">精选实验 ↗</span></a>
+    <a class="menu-link" href="#philosophy"><span class="micro">02</span><span class="menu-en">Philosophy.</span><span class="menu-cn">设计哲学 ↗</span></a>
+    <a class="menu-link" href="#playground"><span class="micro">03</span><span class="menu-en">Your resonance.</span><span class="menu-cn">留下回响 ↗</span></a>
+  </nav><div class="menu-foot micro"><span>Some things are meant to be felt.</span><span>LIMEN / Independent digital experiment</span></div></div>
+</div>
+<main id="main">
+<section class="hero shell" id="home" aria-labelledby="hero-title">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <div class="eyebrow enter"><span class="eyebrow-line"></span><span>AN EXPLORATION OF FORM & FEELING</span></div>
+    <h1 class="hero-title" id="hero-title"><span class="title-line"><span>Beyond</span></span><span class="title-line"><span>the <em>visible.</em></span></span></h1>
+    <p class="hero-description enter delay-1">让光有形，让想象流动。<br>在理性与直觉之间，发现数字世界的另一种可能。</p>
+    <a class="hero-cta enter delay-2" href="#experiments" data-magnetic>开启感官之旅 <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+  </div>
+  <div class="hero-stage art-surface" id="hero-stage" tabindex="0" role="img" aria-label="可交互的虹彩金属雕塑。拖动或使用方向键旋转，双击重置。" data-cursor="drag">
+    <div class="sculpture-aura"></div>
+    <svg class="orbital-guide" viewBox="0 0 700 700" aria-hidden="true"><ellipse cx="350" cy="350" rx="297" ry="218"/><ellipse class="guide-solid" cx="350" cy="350" rx="278" ry="278"/><path d="M350 65v10M350 625v10M65 350h10M625 350h10" stroke="#8a7d93" stroke-width=".6" fill="none"/></svg>
+    <div class="art-fallback" aria-hidden="true"><div class="fallback-ring"></div></div>
+    <canvas class="art-canvas" id="hero-canvas" aria-hidden="true"></canvas>
+    <span class="stage-corner tl">OBJECT Nº 001 / INFINITE FORM</span><span class="stage-corner br">LIGHT STUDY — LIMEN ORIGINAL</span>
+    <span class="stage-caption micro">THE INFINITE LOOP</span><div class="stage-shadow"></div>
+  </div>
+  <div class="material-control" role="group" aria-label="雕塑材质"><span class="material-control-label" id="material-name">CHROMA</span><button class="material-swatch" style="--swatch:linear-gradient(135deg,#d5b8c2,#7475a7)" data-palette="0" type="button" aria-label="虹彩材质" aria-pressed="true"></button><button class="material-swatch" style="--swatch:linear-gradient(135deg,#efebe0,#817e76)" data-palette="1" type="button" aria-label="珍珠银材质" aria-pressed="false"></button><button class="material-swatch" style="--swatch:linear-gradient(135deg,#dbb094,#825033)" data-palette="2" type="button" aria-label="余烬铜材质" aria-pressed="false"></button></div>
+  <div class="stage-hint"><svg class="icon" aria-hidden="true"><use href="#i-drag"/></svg>拖动雕塑，探索另一面</div>
+  <div class="hero-bottom enter delay-3"><a class="scroll-cue" href="#interlude"><span class="scroll-track" aria-hidden="true"></span><span>向下，探索未知</span></a><div class="live-note micro"><span class="dot"></span>REAL-TIME GENERATIVE ART</div><div class="page-index micro"><span>01</span><span>/</span><span>04</span></div></div>
+</section>
+<section class="interlude shell" id="interlude" aria-label="我们的愿景"><div class="section-kicker reveal"><span class="section-number">↳</span><span>NOT JUST SEEN. FELT.</span></div><div><p class="interlude-copy reveal"><span class="reveal-word soft">有些体验，无需解释。</span><br><span class="reveal-word soft">越过屏幕，</span><span class="last">直抵感知。</span></p><div class="interlude-foot reveal">我们不止设计界面，我们创造值得停留的瞬间。</div></div></section>
+<div class="section-rule"></div>
+<section class="works shell" id="experiments" aria-labelledby="works-title">
+  <div class="works-topline reveal"><div class="section-kicker"><span class="section-number">01 /</span><span>SELECTED EXPERIMENTS</span></div><span class="micro">ONGOING EXPLORATIONS · VOL. 001</span></div>
+  <div class="works-heading-row"><h2 class="section-title reveal" id="works-title">Curated<br><em>sensations.</em></h2><p class="works-intro reveal">光的折叠，物质的呼吸，时间的回声。<br>三个实验，三种打开感知的方式。<svg class="icon" viewBox="0 0 30 18" aria-hidden="true"><use href="#i-right"/></svg></p></div>
+  <div class="work-grid" id="work-grid">
+    <button type="button" class="work-card reveal" data-project="0" data-cursor="view" aria-label="打开 Iridescence 虹彩之间实验">
+      <div class="work-art art-surface"><div class="art-fallback" aria-hidden="true"><div class="fallback-ring"></div></div><canvas class="art-canvas work-canvas" data-variant="1" data-material="0" aria-hidden="true"></canvas><svg class="art-orbit" viewBox="0 0 300 300" aria-hidden="true"><circle cx="150" cy="150" r="135"/><path d="M150 0v300M0 150h300" stroke-dasharray="1 8"/></svg><span class="art-coordinate micro">STUDY 001 — LIGHT</span><span class="art-open-icon"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></span><span class="art-badge">CHROMATIC EXPLORATION</span></div><div class="work-caption"><div><h3>Iridescence</h3><p>虹彩之间 / 光与表面的诗学</p></div><span class="work-year">EXP. 001</span></div>
+    </button>
+    <button type="button" class="work-card reveal delay-1" data-project="1" data-cursor="view" aria-label="打开 Soft gravity 柔性引力实验">
+      <div class="work-art art-surface"><div class="art-fallback" aria-hidden="true"><div class="fallback-ring"></div></div><canvas class="art-canvas work-canvas" data-variant="2" data-material="1" aria-hidden="true"></canvas><svg class="art-orbit" viewBox="0 0 300 300" aria-hidden="true"><ellipse cx="150" cy="150" rx="143" ry="100" transform="rotate(-40 150 150)"/><ellipse cx="150" cy="150" rx="143" ry="100" transform="rotate(40 150 150)"/></svg><span class="art-coordinate micro">STUDY 002 — MOTION</span><span class="art-open-icon"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></span><span class="art-badge">A STUDY IN EQUILIBRIUM</span></div><div class="work-caption"><div><h3>Soft gravity</h3><p>柔性引力 / 悬浮中的平衡</p></div><span class="work-year">EXP. 002</span></div>
+    </button>
+    <button type="button" class="work-card reveal delay-2" data-project="2" data-cursor="view" aria-label="打开 Afterglow 余温未尽实验">
+      <div class="work-art art-surface"><div class="art-fallback" aria-hidden="true"><div class="fallback-ring"></div></div><canvas class="art-canvas work-canvas" data-variant="3" data-material="2" aria-hidden="true"></canvas><svg class="art-orbit" viewBox="0 0 300 300" aria-hidden="true"><rect x="25" y="25" width="250" height="250" transform="rotate(15 150 150)"/><rect x="40" y="40" width="220" height="220" transform="rotate(-15 150 150)"/></svg><span class="art-coordinate micro">STUDY 003 — MATTER</span><span class="art-open-icon"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></span><span class="art-badge">THE MEMORY OF WARMTH</span></div><div class="work-caption"><div><h3>Afterglow</h3><p>余温未尽 / 物质的情绪记忆</p></div><span class="work-year">EXP. 003</span></div>
+    </button>
+  </div>
+  <div class="works-bottom reveal"><span class="works-count micro">01 <span class="tiny-bar"></span> 03</span><span class="works-mobile-hint">每一个实验，都可以被触碰。</span><a href="#playground" class="inline-link">创造你的回响<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+</section>
+<section class="philosophy shell" id="philosophy" aria-labelledby="philosophy-title">
+  <div class="philosophy-top reveal"><div class="section-kicker"><span class="section-number">02 /</span><span>THE LIMEN PHILOSOPHY</span></div><span class="micro">A QUIET REBELLION<br>AGAINST THE ORDINARY.</span></div>
+  <div class="philosophy-grid"><div><h2 class="philosophy-title reveal" id="philosophy-title">Less,<br><span class="indent">but more</span><br><em>feeling.</em></h2><div class="philosophy-mark reveal"><svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="50" rx="44" ry="14"/><ellipse cx="50" cy="50" rx="44" ry="14" transform="rotate(30 50 50)"/><ellipse cx="50" cy="50" rx="44" ry="14" transform="rotate(60 50 50)"/><ellipse cx="50" cy="50" rx="44" ry="14" transform="rotate(90 50 50)"/><ellipse cx="50" cy="50" rx="44" ry="14" transform="rotate(120 50 50)"/><ellipse cx="50" cy="50" rx="44" ry="14" transform="rotate(150 50 50)"/></svg><p>FORM FOLLOWS FEELING.<br>EST. IN THE IN-BETWEEN.</p></div></div>
+  <div class="philosophy-copy reveal delay-1"><p class="philosophy-lead">数字，也可以有温度。<br>我们相信，好的体验不止于顺手，<br>更在于它让你产生了什么感受。</p><p class="philosophy-note">不为填满每一寸屏幕，只为让每一处细节都恰到好处。</p>
+    <div class="principles">
+      <div class="principle open"><h3><button class="principle-trigger" type="button" aria-expanded="true" aria-controls="principle-1"><span class="principle-num">01</span><span class="principle-label">情绪，先于功能</span><span class="principle-mark" aria-hidden="true"></span></button></h3><div class="principle-body" id="principle-1"><div><p>从第一眼的心动，到每一次交互的回应。我们设计的不仅是一条使用路径，更是一段情绪旅程。</p></div></div></div>
+      <div class="principle"><h3><button class="principle-trigger" type="button" aria-expanded="false" aria-controls="principle-2"><span class="principle-num">02</span><span class="principle-label">细节，构成体验</span><span class="principle-mark" aria-hidden="true"></span></button></h3><div class="principle-body" id="principle-2"><div><p>一个恰好的停顿，一束随指尖转动的光，一段自然消散的回响。真正的质感，藏在不必被解释的细微之处。</p></div></div></div>
+      <div class="principle"><h3><button class="principle-trigger" type="button" aria-expanded="false" aria-controls="principle-3"><span class="principle-num">03</span><span class="principle-label">技术，隐于无形</span><span class="principle-mark" aria-hidden="true"></span></button></h3><div class="principle-body" id="principle-3"><div><p>让复杂留在幕后，让直觉发生在眼前。图形、声音与动效彼此协作，但始终把注意力交还给你。</p></div></div></div>
+    </div>
+  </div></div>
+</section>
+<div class="marquee" aria-hidden="true"><div class="marquee-track"><span class="marquee-text">Less interface. More feeling.<span class="marquee-symbol">✳</span>Made to move you.<span class="marquee-symbol">✳</span></span><span class="marquee-text">Less interface. More feeling.<span class="marquee-symbol">✳</span>Made to move you.<span class="marquee-symbol">✳</span></span></div></div>
+<section class="playground shell" id="playground" aria-labelledby="playground-title" data-cursor="play">
+  <canvas class="ripple-canvas" id="ripple-canvas" aria-hidden="true"></canvas>
+  <div class="playground-content"><div class="section-kicker reveal"><span class="section-number">03 /</span><span>NOW, IT'S YOUR TURN.</span></div><h2 class="playground-title reveal" id="playground-title">Everything begins<br>with a <em>ripple.</em></h2><p class="reveal">移动指尖，扰动这片寂静。<br>点击，让回响发生。</p><button class="ripple-trigger" type="button" aria-label="触发光波回响" data-magnetic><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="8" stroke-dasharray="1 4"/></svg></button><span class="ripple-trigger-label">MAKE A LITTLE RESONANCE</span></div>
+  <div class="playground-bottom"><div class="mood-control"><span class="mood-title">ATMOSPHERE / 光场</span><div class="mood-options" role="group" aria-label="光场氛围"><button class="mood-button" type="button" data-mood="0" aria-pressed="true">静谧</button><button class="mood-button" type="button" data-mood="1" aria-pressed="false">流动</button><button class="mood-button" type="button" data-mood="2" aria-pressed="false">炽热</button></div></div><div class="interaction-tally"><strong id="ripple-count">000</strong> RESONANCES CREATED<span>每一次触碰，都独一无二。</span></div></div>
+</section>
+</main>
+<footer class="footer shell"><div class="footer-top"><span>一个关于感知的数字实验。</span><a class="inline-link" href="#home">再感受一次<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div><div class="footer-wordmark" aria-label="LIMEN">LIMEN<span class="asterisk" aria-hidden="true">✳</span></div><div class="footer-bottom"><span class="micro">© LIMEN — AN INDEPENDENT DIGITAL EXPERIMENT</span><div class="clock micro"><span>YOUR LOCAL TIME</span><time id="local-clock">—:—:—</time></div><button class="motion-toggle" type="button" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-pause"/></svg><span>暂停动态</span></button></div></footer>
+<dialog class="project-dialog" id="project-dialog" aria-labelledby="dialog-title"><div class="dialog-top"><span class="micro">LIMEN / EXPERIMENT VIEWER</span><button class="close-dialog" type="button" aria-label="关闭实验详情"><span>关闭 / ESC</span><span class="close-circle"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></span></button></div><div class="dialog-layout"><div class="dialog-art art-surface" id="dialog-stage" tabindex="0" role="img" aria-label="实验雕塑，可拖动或使用方向键旋转" data-cursor="drag"><div class="art-fallback" aria-hidden="true"><div class="fallback-ring"></div></div><canvas class="art-canvas" id="dialog-canvas" aria-hidden="true"></canvas><span class="micro">DRAG TO EXPLORE · DOUBLE CLICK TO RESET</span></div><div class="dialog-info"><p class="dialog-index micro" id="dialog-index">EXPERIMENT 001</p><h2 class="dialog-title" id="dialog-title">Iridescence</h2><p class="dialog-subtitle" id="dialog-subtitle">虹彩之间</p><p class="dialog-description" id="dialog-description"></p><dl class="dialog-specs"><div><dt>MEDIUM / 媒介</dt><dd>实时生成 · 光线步进</dd></div><div><dt>EXPRESSION / 表达</dt><dd id="dialog-expression">光 · 虹彩 · 流动</dd></div></dl><div class="dialog-actions"><button class="dialog-button primary" type="button" id="save-frame">收藏这一帧<svg class="icon" aria-hidden="true"><use href="#i-save"/></svg></button><button class="dialog-button" type="button" id="dialog-light">切换光场<svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg></button></div></div></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript><style>.intro{display:none!important}.js .hero .enter,.js .hero .hero-stage,.js .reveal{opacity:1!important;transform:none!important}.js .hero .hero-title .title-line>span{transform:none!important}</style><p style="padding:20px;text-align:center">开启 JavaScript，即可体验实时光影与交互。页面文字与导航仍可正常浏览。</p></noscript>
+<script>
+(() => {
+  'use strict';
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let reduced = reducedQuery.matches;
+  let motionPaused = reduced;
+  let menuOpen = false;
+  let clock = 0;
+  let lastFrame = 0;
+  let activePalette = 0;
+  let toastTimer;
+  const artObjects = [];
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  function toast(message) { const t = $('#toast'); t.textContent = message; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3100); }
+
+  // WebGL ray-marched sculpture. Geometry, studio lighting and thin-film colour
+  // are procedural: no image files, libraries, network access or build step.
+  const VERTEX = `attribute vec2 aPosition;void main(){gl_Position=vec4(aPosition,0.,1.);}`;
+  const FRAGMENT = `
+  precision highp float;
+  uniform vec2 uResolution;
+  uniform float uTime,uPalette,uVariant,uEnergy;
+  uniform vec2 uPointer,uRotation;
+  mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+  vec3 orient(vec3 p){
+    p.xz=rot(-.40+uRotation.x+uPointer.x*.11+sin(uTime*.17)*.12)*p.xz;
+    p.yz=rot(.30+uRotation.y-uPointer.y*.10)*p.yz;
+    p.xy=rot(-.48+uTime*.055)*p.xy;
+    return p;
+  }
+  float scene(vec3 p){
+    vec3 q=orient(p);
+    if(uVariant<.5){
+      float a=atan(q.y,q.x);
+      float radius=1.02+.052*sin(a*3.+uTime*.27);
+      vec2 v=vec2(length(q.xy)-radius,q.z+.12*sin(a*2.+uTime*.18));
+      v=rot(a+uTime*.09+.35)*v;
+      vec2 r=vec2(.355,.172);
+      float k0=length(v/r),k1=length(v/(r*r));
+      return k0*(k0-1.)/max(k1,.0001);
+    }
+    if(uVariant<1.5){
+      q.y*=.94;
+      float d=length(q)-1.03;
+      d+=.038*sin(q.y*8.+uTime*.6)*sin(q.x*6.+q.z*4.);
+      d+=.018*sin(q.z*14.-uTime*.5)*sin(q.y*9.);
+      return d*.78;
+    }
+    if(uVariant<2.5){
+      q.xz=rot(.48)*q.xz;
+      float a=atan(q.y,q.x);
+      vec2 v=vec2(length(q.xy)-.94,q.z+.17*sin(a*3.+uTime*.28));
+      v=rot(a*1.5+.4)*v;
+      vec2 r=vec2(.30,.22);
+      float k0=length(v/r),k1=length(v/(r*r));
+      return k0*(k0-1.)/max(k1,.0001);
+    }
+    q.xz=rot(.55)*q.xz;q.yz=rot(-.2)*q.yz;
+    vec3 b=abs(q)-vec3(.63,.69,.63);
+    return (length(max(b,0.))+min(max(b.x,max(b.y,b.z)),0.)-.22+.018*sin(q.y*11.+uTime)*sin(q.x*9.+q.z*8.))*.86;
+  }
+  vec3 normalAt(vec3 p){vec2 e=vec2(.0016,0.);return normalize(vec3(scene(p+e.xyy)-scene(p-e.xyy),scene(p+e.yxy)-scene(p-e.yxy),scene(p+e.yyx)-scene(p-e.yyx)));}
+  vec3 environment(vec3 d){
+    vec3 cool=vec3(.48,.48,.86),warm=vec3(.92,.61,.43);
+    float pearl=1.-smoothstep(.0,.8,abs(uPalette-1.));
+    float copper=smoothstep(1.05,1.95,uPalette);
+    cool=mix(cool,vec3(.80,.85,.86),pearl);warm=mix(warm,vec3(.92,.85,.68),pearl);
+    cool=mix(cool,vec3(.65,.25,.11),copper);warm=mix(warm,vec3(1.,.65,.30),copper);
+    float a=atan(d.z,d.x);
+    float ribbon=exp(-pow((d.y-.43-.10*sin(a*2.))*7.,2.));
+    float ribbon2=exp(-pow((d.y+.38+.06*cos(a*3.))*12.,2.));
+    float window1=pow(max(0.,dot(d,normalize(vec3(-1.0,1.4,1.2)))),23.);
+    float window2=pow(max(0.,dot(d,normalize(vec3(1.1,.15,-1.6)))),37.);
+    float rim=pow(max(0.,dot(d,normalize(vec3(.2,-1.,.4)))),14.);
+    vec3 col=vec3(.032,.032,.05)+cool*(.20+.27*d.y);
+    col+=ribbon*vec3(1.,.93,.91)*1.9;
+    col+=ribbon2*cool*.78;
+    col+=window1*vec3(1.,.94,.86)*3.1;
+    col+=window2*warm*3.0+rim*warm*.55;
+    return max(col,vec3(.0));
+  }
+  void main(){
+    vec2 uv=(gl_FragCoord.xy-uResolution*.5)/uResolution.y;
+    float viewScale=uVariant>.5?3.9:3.42;
+    vec3 ro=vec3(0.,0.,4.8);
+    vec3 rd=normalize(vec3(uv*viewScale,-4.6));
+    float b=dot(ro,rd),h=b*b-dot(ro,ro)+3.35;
+    if(h<0.){gl_FragColor=vec4(0.);return;}
+    float t=max(0.,-b-sqrt(h));float end=-b+sqrt(h);
+    bool hit=false;
+    for(int i=0;i<70;i++){
+      float d=scene(ro+rd*t);
+      if(d<.0017){hit=true;break;}
+      t+=max(d*.78,.001);
+      if(t>end)break;
+    }
+    if(!hit){gl_FragColor=vec4(0.);return;}
+    vec3 p=ro+rd*t,n=normalAt(p);
+    vec3 reflection=reflect(rd,n);
+    float facing=clamp(dot(n,-rd),0.,1.);
+    float fresnel=pow(1.-facing,3.);
+    float pearl=1.-smoothstep(.0,.8,abs(uPalette-1.));
+    float copper=smoothstep(1.05,1.95,uPalette);
+    vec3 film=.60+.32*cos(vec3(.1,2.0,3.9)+facing*5.8+p.y*1.1+uTime*.09);
+    film=mix(film,vec3(.80,.79,.73),pearl*.88);
+    film=mix(film,vec3(.94,.52,.25),copper*.86);
+    vec3 env=environment(reflection);
+    vec3 color=env*mix(vec3(.65),film,.55)+film*.065;
+    vec3 lightDir=normalize(vec3(-.6,1.,2.));
+    float spec=pow(max(dot(reflect(-lightDir,n),-rd),0.),75.);
+    color+=spec*vec3(1.,.84,.73)*1.4;
+    color+=fresnel*vec3(.29,.24,.42)*.4;
+    color*=.82+.18*smoothstep(-1.3,1.2,p.y);
+    color+=uEnergy*film*.13;
+    color=1.-exp(-color*1.30);
+    color=pow(max(color,0.),vec3(.88));
+    float noise=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)-.5;
+    color+=noise*.008;
+    gl_FragColor=vec4(color,1.);
+  }`;
+
+  class Sculpture {
+    constructor(canvas, variant = 0, palette = 0, interactive = false) {
+      this.canvas=canvas;this.container=canvas.parentElement;this.variant=variant;this.palette=palette;this.paletteTarget=palette;
+      this.pointer=[0,0];this.pointerTarget=[0,0];this.rotation=[0,0];this.rotationTarget=[0,0];this.energy=0;
+      this.visible=true;this.isDialog=canvas.id==='dialog-canvas';this.scale=1;this.dirty=true;this.ready=false;this.dragged=false;
+      try {
+        const gl=canvas.getContext('webgl',{alpha:true,antialias:false,premultipliedAlpha:false,preserveDrawingBuffer:this.isDialog,powerPreference:'low-power'});
+        if(!gl)throw new Error('WebGL unavailable');
+        this.gl=gl;
+        const compile=(type,source)=>{const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;};
+        const vert=compile(gl.VERTEX_SHADER,VERTEX),frag=compile(gl.FRAGMENT_SHADER,FRAGMENT);
+        const program=gl.createProgram();gl.attachShader(program,vert);gl.attachShader(program,frag);gl.linkProgram(program);
+        if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));
+        gl.deleteShader(vert);gl.deleteShader(frag);this.program=program;gl.useProgram(program);
+        const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+        const pos=gl.getAttribLocation(program,'aPosition');gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
+        this.uniforms={};['uResolution','uTime','uPalette','uVariant','uPointer','uRotation','uEnergy'].forEach(n=>this.uniforms[n]=gl.getUniformLocation(program,n));
+        this.ready=true;this.container.classList.add('has-webgl');
+        const io=new IntersectionObserver(entries=>{this.visible=entries[0].isIntersecting;if(this.visible)this.dirty=true;},{rootMargin:'80px'});io.observe(this.container);this.observer=io;
+        const ro=new ResizeObserver(()=>{this.resize();this.dirty=true;});ro.observe(this.container);this.resizeObserver=ro;this.resize();
+        canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();this.ready=false;this.container.classList.remove('has-webgl');});
+        canvas.addEventListener('webglcontextrestored',()=>{toast('图形环境已恢复，刷新页面即可重新进入实时模式。');});
+      } catch(error) {
+        this.ready=false;canvas.style.display='none';this.container.classList.remove('has-webgl');
+      }
+      if(interactive)this.bindInteraction();
+      artObjects.push(this);
+    }
+    resize(){if(!this.ready)return;const r=this.container.getBoundingClientRect();if(r.width<1||r.height<1)return;const ratio=Math.min(window.devicePixelRatio||1,this.isDialog?1.5:1.25)*this.scale;const w=Math.max(1,Math.round(r.width*ratio)),h=Math.max(1,Math.round(r.height*ratio));if(this.canvas.width!==w||this.canvas.height!==h){this.canvas.width=w;this.canvas.height=h;this.gl.viewport(0,0,w,h);}this.dirty=true;}
+    bindInteraction(){
+      let down=false,start=[0,0],initial=[0,0],activePointer=null;
+      this.container.addEventListener('pointerdown',e=>{if(e.button!==0)return;down=true;activePointer=e.pointerId;this.dragged=false;start=[e.clientX,e.clientY];initial=[...this.rotationTarget];this.container.classList.add('dragging');if(e.pointerType==='mouse')this.container.setPointerCapture(e.pointerId);});
+      this.container.addEventListener('pointermove',e=>{
+        const r=this.container.getBoundingClientRect();this.pointerTarget=[(e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height*2-1)];this.dirty=true;
+        if(down){const dx=e.clientX-start[0],dy=e.clientY-start[1];if(Math.hypot(dx,dy)>5)this.dragged=true;this.rotationTarget=[initial[0]+dx*.007,initial[1]+dy*.007];this.energy=.7;}
+      });
+      const end=()=>{down=false;activePointer=null;this.container.classList.remove('dragging');};
+      this.container.addEventListener('pointerup',end);this.container.addEventListener('pointercancel',end);this.container.addEventListener('lostpointercapture',end);
+      this.container.addEventListener('pointerleave',()=>{this.pointerTarget=[0,0];this.dirty=true;if(activePointer===null||!this.container.hasPointerCapture(activePointer))end();});
+      this.container.addEventListener('dblclick',()=>{this.rotationTarget=[0,0];this.energy=1;this.dirty=true;toast('视角已归位。');});
+      this.container.addEventListener('keydown',e=>{const step=.22;const keys={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]};if(keys[e.key]){e.preventDefault();this.rotationTarget[0]+=keys[e.key][0];this.rotationTarget[1]+=keys[e.key][1];this.dirty=true;}if(e.key==='Home'){e.preventDefault();this.rotationTarget=[0,0];this.dirty=true;}});
+    }
+    render(time,force=false){
+      if(!this.ready){
+        if(this.dirty){const ring=this.container.querySelector('.fallback-ring');if(ring){ring.style.transition='transform .6s cubic-bezier(.22,1,.36,1),filter .6s';ring.style.transform=`rotate(${-34+this.rotationTarget[0]*18}deg) rotateY(${25+this.rotationTarget[0]*45+this.pointerTarget[0]*10}deg) rotateX(${this.rotationTarget[1]*40}deg)`;ring.style.filter=this.paletteTarget===1?'grayscale(1) brightness(1.2)':this.paletteTarget===2?'sepia(.8) saturate(1.8) hue-rotate(330deg)':'none';}this.dirty=false;}return;
+      }
+      if((!force&&(!this.visible||(this.isDialog&&!dialog.open)||(!this.isDialog&&(dialog.open||menuOpen)))))return;
+      if(motionPaused&&!this.dirty&&!force)return;
+      const gl=this.gl;gl.useProgram(this.program);
+      this.palette+=(this.paletteTarget-this.palette)*.055;
+      for(let i=0;i<2;i++){this.pointer[i]+=(this.pointerTarget[i]-this.pointer[i])*.045;this.rotation[i]+=(this.rotationTarget[i]-this.rotation[i])*.065;}
+      this.energy*=.95;
+      gl.uniform2f(this.uniforms.uResolution,this.canvas.width,this.canvas.height);
+      gl.uniform1f(this.uniforms.uTime,time+(this.variant*8.));gl.uniform1f(this.uniforms.uPalette,this.palette);gl.uniform1f(this.uniforms.uVariant,this.variant);
+      gl.uniform2f(this.uniforms.uPointer,...this.pointer);gl.uniform2f(this.uniforms.uRotation,...this.rotation);gl.uniform1f(this.uniforms.uEnergy,this.energy);
+      gl.drawArrays(gl.TRIANGLES,0,6);
+      this.dirty=Math.abs(this.palette-this.paletteTarget)>.005||this.rotation.some((v,i)=>Math.abs(v-this.rotationTarget[i])>.005)||this.pointer.some((v,i)=>Math.abs(v-this.pointerTarget[i])>.005);
+    }
+    setPalette(p){this.paletteTarget=p;this.dirty=true;this.energy=.8;}
+  }
+  const dialog=$('#project-dialog');
+  const heroArt=new Sculpture($('#hero-canvas'),0,0,true);
+  $$('.work-canvas').forEach(c=>new Sculpture(c,Number(c.dataset.variant),Number(c.dataset.material)));
+  let dialogArt=null;
+  $$('.work-card').forEach(card=>{
+    const art=artObjects.find(a=>a.canvas===card.querySelector('canvas'));
+    card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect();art.pointerTarget=[(e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height*2-1)];art.energy=.4;art.dirty=true;});
+    card.addEventListener('pointerleave',()=>{art.pointerTarget=[0,0];art.dirty=true;});
+  });
+  const paletteNames=['CHROMA','PEARL','EMBER'];
+  $$('.material-swatch').forEach(button=>button.addEventListener('click',()=>{activePalette=Number(button.dataset.palette);heroArt.setPalette(activePalette);$('#material-name').textContent=paletteNames[activePalette];$$('.material-swatch').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}));
+
+  // Participatory wave field: projected concentric filaments and ephemeral ripples.
+  class WaveField {
+    constructor(canvas){
+      this.canvas=canvas;this.ctx=canvas.getContext('2d');this.w=1;this.h=1;this.visible=false;this.mood=0;this.moodTarget=0;
+      this.pointer=[.5,.56];this.pointerTarget=[.5,.56];this.ripples=[];this.count=0;this.dirty=true;
+      this.stars=Array.from({length:82},(_,i)=>({x:this.hash(i*3.17),y:this.hash(i*7.49),s:.3+this.hash(i*4.13),a:.08+this.hash(i*8.21)*.35}));
+      new ResizeObserver(()=>this.resize()).observe(canvas.parentElement);
+      new IntersectionObserver(es=>{this.visible=es[0].isIntersecting;this.dirty=true;},{rootMargin:'100px'}).observe(canvas.parentElement);
+      const area=canvas.parentElement;
+      area.addEventListener('pointermove',e=>{const r=area.getBoundingClientRect();this.pointerTarget=[(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height];this.dirty=true;});
+      area.addEventListener('pointerleave',()=>{this.pointerTarget=[.5,.56];this.dirty=true;});
+      area.addEventListener('click',e=>{if(e.target.closest('button,a'))return;const r=area.getBoundingClientRect();this.add((e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height);});
+      $('.ripple-trigger').addEventListener('click',()=>this.add(.5,.58));
+      this.resize();
+    }
+    hash(v){return (Math.sin(v*127.1+311.7)*43758.5453123)%1*.5+.5;}
+    resize(){const r=this.canvas.parentElement.getBoundingClientRect();this.w=r.width;this.h=r.height;const d=Math.min(window.devicePixelRatio||1,1.5);this.canvas.width=Math.round(r.width*d);this.canvas.height=Math.round(r.height*d);if(this.ctx)this.ctx.setTransform(d,0,0,d,0,0);this.dirty=true;}
+    add(x,y){this.ripples.push({x,y,age:0});if(this.ripples.length>12)this.ripples.shift();this.count++;$('#ripple-count').textContent=String(this.count).padStart(3,'0');this.dirty=true;audio.chime(x,y);if(motionPaused){this.render(clock,0,true);toast('回响已留下。动态当前已暂停。');}}
+    render(time,dt,force=false){
+      if(!this.ctx||(!force&&(!this.visible||menuOpen||dialog.open)))return;
+      if(motionPaused&&!this.dirty&&!force)return;
+      const c=this.ctx,w=this.w,h=this.h;
+      for(let i=0;i<2;i++)this.pointer[i]+=(this.pointerTarget[i]-this.pointer[i])*.025;
+      this.mood+=(this.moodTarget-this.mood)*.035;
+      const m=this.mood;const warm=clamp(m-1,0,1),fluid=1-Math.min(1,Math.abs(m-1));
+      const red=Math.round(129+warm*89-fluid*33),green=Math.round(113+warm*25+fluid*21),blue=Math.round(164-warm*79+fluid*19);
+      c.clearRect(0,0,w,h);
+      const cx=w*(.5+(this.pointer[0]-.5)*.035),cy=h*.72+(this.pointer[1]-.5)*16;
+      const glow=c.createRadialGradient(cx,cy,0,cx,cy,w*.42);
+      glow.addColorStop(0,`rgba(${red},${green},${blue},.075)`);glow.addColorStop(.6,`rgba(${red},${green},${blue},.025)`);glow.addColorStop(1,`rgba(${red},${green},${blue},0)`);c.fillStyle=glow;c.fillRect(0,0,w,h);
+      this.stars.forEach((s,i)=>{const x=s.x*w,y=(.15+s.y*.7)*h;const a=s.a*(.5+.5*Math.sin(time*.3+i));c.beginPath();c.arc(x,y,s.s,0,Math.PI*2);c.fillStyle=`rgba(${red+25},${green+25},${blue+20},${a})`;c.fill();});
+      const scale=Math.min(w*.40,510),rings=w<600?37:53,segments=w<600?100:136;
+      for(let j=rings;j>0;j--){
+        const f=j/rings,r=scale*(.12+f*1.05);const baseAlpha=(.05+Math.pow(1-f,.9)*.21);
+        c.beginPath();
+        for(let k=0;k<=segments;k++){
+          const a=k/segments*Math.PI*2;
+          const wave=Math.sin(a*3+f*9-time*(.45+fluid*.3))*(9+fluid*7)*Math.sin(f*Math.PI);
+          const wave2=Math.sin(a*5-f*12+time*.3)*4;
+          let y=cy+Math.sin(a)*r*.285+wave+wave2-(1-f)*15;
+          let x=cx+Math.cos(a)*r;
+          const pdx=x-this.pointer[0]*w,pdy=y-this.pointer[1]*h;
+          const influence=Math.exp(-(pdx*pdx+pdy*pdy)/29000);y-=influence*(18+fluid*15);
+          for(const p of this.ripples){const dx=x-p.x*w,dy=(y-p.y*h)*1.8;const dist=Math.sqrt(dx*dx+dy*dy);y+=Math.sin(dist*.033-p.age*4.5)*Math.exp(-Math.pow((dist-p.age*145)/110,2))*Math.max(0,1-p.age/4)*19;}
+          if(k===0)c.moveTo(x,y);else c.lineTo(x,y);
+        }
+        c.closePath();c.lineWidth=.7;c.strokeStyle=`rgba(${red},${green},${blue},${baseAlpha})`;c.stroke();
+      }
+      for(let i=this.ripples.length-1;i>=0;i--){
+        const p=this.ripples[i];if(!motionPaused)p.age+=dt;
+        const alpha=Math.max(0,1-p.age/3.2)*.45;
+        const radius=12+p.age*145;
+        c.beginPath();c.ellipse(p.x*w,p.y*h,radius,radius*.48,0,0,Math.PI*2);c.strokeStyle=`rgba(${red+30},${green+30},${blue+20},${alpha})`;c.lineWidth=.8;c.stroke();
+        if(p.age>4)this.ripples.splice(i,1);
+      }
+      this.dirty=this.pointer.some((v,i)=>Math.abs(v-this.pointerTarget[i])>.002)||Math.abs(this.mood-this.moodTarget)>.005;
+    }
+  }
+
+  // Audio is opt-in only. Quiet oscillator pads and a short pentatonic chime.
+  class AmbientAudio {
+    constructor(){this.context=null;this.master=null;this.enabled=false;this.oscillators=[];}
+    async toggle(){
+      try {
+        const A=window.AudioContext||window.webkitAudioContext;if(!A){toast('当前浏览器不支持环境声音。');return;}
+        if(!this.context){this.context=new A();this.master=this.context.createGain();this.master.gain.value=0;this.master.connect(this.context.destination);[130.81,196,261.63].forEach((f,i)=>{const o=this.context.createOscillator(),g=this.context.createGain();o.type='sine';o.frequency.value=f;o.detune.value=i===1?-5:3;g.gain.value=[.12,.045,.035][i];o.connect(g);g.connect(this.master);o.start();this.oscillators.push(o);});}
+        await this.context.resume();this.enabled=!this.enabled;const t=this.context.currentTime;this.master.gain.cancelScheduledValues(t);this.master.gain.setTargetAtTime(this.enabled?.30:0,t,.4);this.update();toast(this.enabled?'声音已开启。点击光场，听见你的回响。':'声音已关闭。');
+      }catch(e){toast('声音暂时无法开启，请检查浏览器的音频权限。');}
+    }
+    update(){const b=$('.sound-toggle');b.setAttribute('aria-pressed',String(this.enabled));b.setAttribute('aria-label',this.enabled?'关闭环境声音':'开启环境声音');$('.sound-label').textContent=this.enabled?'声音开启':'声音关闭';}
+    chime(x,y){if(!this.enabled||!this.context)return;const t=this.context.currentTime;const notes=[261.63,293.66,329.63,392,440,523.25];const f=notes[Math.min(5,Math.floor(x*6))];const o=this.context.createOscillator(),g=this.context.createGain();o.type='sine';o.frequency.value=f;o.connect(g);g.connect(this.master);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.28,t+.025);g.gain.exponentialRampToValueAtTime(.001,t+2.3);o.start(t);o.stop(t+2.4);o.onended=()=>{o.disconnect();g.disconnect();};}
+    setMood(m){if(!this.context)return;const ratios=[1,1.12246,.840896];this.oscillators.forEach((o,i)=>o.frequency.setTargetAtTime([130.81,196,261.63][i]*ratios[m],this.context.currentTime,1.2));}
+  }
+  const audio=new AmbientAudio();
+  $('.sound-toggle').addEventListener('click',()=>audio.toggle());
+  const waves=new WaveField($('#ripple-canvas'));
+  $$('.mood-button').forEach(b=>b.addEventListener('click',()=>{const m=Number(b.dataset.mood);waves.moodTarget=m;waves.dirty=true;audio.setMood(m);$$('.mood-button').forEach(v=>v.setAttribute('aria-pressed',String(v===b)));waves.add(.5,.7); }));
+
+  // Each principle is a fully functional, progressively revealed accordion.
+  $$('.principle').forEach(panel=>{
+    const button=$('.principle-trigger',panel),body=$('.principle-body',panel);
+    body.inert=!panel.classList.contains('open');
+    button.addEventListener('click',()=>{
+      const open=!panel.classList.contains('open');
+      $$('.principle').forEach(other=>{other.classList.remove('open');$('.principle-trigger',other).setAttribute('aria-expanded','false');$('.principle-body',other).inert=true;});
+      panel.classList.toggle('open',open);button.setAttribute('aria-expanded',String(open));body.inert=!open;
+    });
+  });
+
+  // Navigation, overlays and keyboard focus management.
+  const menuPanel=$('#menu-panel'),menuToggle=$('.menu-toggle'),main=$('main'),footer=$('footer');
+  function setBackgroundInert(on){main.inert=on;footer.inert=on;$('.header-nav').inert=on;$('.brand').inert=on;$('.sound-toggle').inert=on;}
+  function setMenu(open){
+    menuOpen=open;menuPanel.classList.toggle('open',open);menuPanel.inert=!open;menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'关闭导航菜单':'打开导航菜单');document.body.classList.toggle('locked',open||dialog.open);setBackgroundInert(open);
+    if(open){setTimeout(()=>$('.menu-link').focus({preventScroll:true}),100);}else{menuToggle.focus({preventScroll:true});}
+  }
+  menuToggle.addEventListener('click',()=>setMenu(!menuOpen));
+  $$('.menu-link').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const target=$(a.getAttribute('href'));setMenu(false);requestAnimationFrame(()=>target.scrollIntoView({behavior:motionPaused?'instant':'smooth'}));}));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&menuOpen){setMenu(false);return;}
+    if(e.key==='Tab'&&menuOpen){const links=[menuToggle,...$$('.menu-link')];const first=links[0],last=links[links.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
+  });
+  const projects=[
+    {name:'Iridescence',cn:'虹彩之间',description:'颜色从未真正属于物体，它只存在于光与你相遇的那一刻。转动这颗不安分的星体，看冷紫、雾银与柔金如何在起伏的表面悄然交换位置。没有两次凝视，会得到完全相同的答案。',expression:'光 · 虹彩 · 流动',variant:1,palette:0,bg:'#2b2135'},
+    {name:'Soft gravity',cn:'柔性引力',description:'一个无法被轻易定义的环，悬停在秩序与失重之间。它扭转，却不曾断裂；它流动，却始终完整。拖动视角，找到那个让一切恰好平衡的瞬间。',expression:'运动 · 连续 · 平衡',variant:2,palette:1,bg:'#302d27'},
+    {name:'Afterglow',cn:'余温未尽',description:'当炽热归于平静，物质还会记住温度吗？柔化的棱角、缓慢起伏的表面，与最后一缕铜色反光，共同构成一段关于余温的想象。让光掠过它，也让时间慢一点。',expression:'物质 · 温度 · 记忆',variant:3,palette:2,bg:'#48261e'}
+  ];
+  let projectIndex=0,previousFocus=null;
+  function openProject(index){
+    const p=projects[index];projectIndex=index;previousFocus=document.activeElement;
+    $('#dialog-title').textContent=p.name;$('#dialog-subtitle').textContent=p.cn;$('#dialog-description').textContent=p.description;$('#dialog-expression').textContent=p.expression;$('#dialog-index').textContent='EXPERIMENT '+String(index+1).padStart(3,'0')+' / INTERACTIVE STUDY';$('#dialog-stage').style.background=`radial-gradient(ellipse,${p.bg},transparent 72%)`;
+    dialog.showModal();document.body.classList.add('locked');
+    ['.cursor-dot','.cursor-ring','#toast'].forEach(s=>dialog.appendChild($(s)));
+    $('#toast').classList.remove('show');
+    if(!dialogArt)dialogArt=new Sculpture($('#dialog-canvas'),p.variant,p.palette,true);
+    dialogArt.variant=p.variant;dialogArt.palette=p.palette;dialogArt.paletteTarget=p.palette;dialogArt.rotationTarget=[0,0];dialogArt.rotation=[0,0];dialogArt.visible=true;dialogArt.resize();dialogArt.dirty=true;dialogArt.render(clock,true);
+    $('#save-frame').disabled=!dialogArt.ready;
+    if(!dialogArt.ready)$('#save-frame').title='实时图形不可用，无法导出画面';
+    $('.close-dialog').focus({preventScroll:true});
+  }
+  $$('.work-card').forEach(b=>b.addEventListener('click',()=>openProject(Number(b.dataset.project))));
+  $('.close-dialog').addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('close',()=>{['.cursor-dot','.cursor-ring','#toast'].forEach(s=>document.body.appendChild($(s)));$('#toast').classList.remove('show');document.body.classList.toggle('locked',menuOpen);if(previousFocus)previousFocus.focus({preventScroll:true});artObjects.forEach(a=>a.dirty=true);});
+  $('#dialog-light').addEventListener('click',()=>{if(dialogArt){dialogArt.setPalette((Math.round(dialogArt.paletteTarget)+1)%3);toast('光场 / '+paletteNames[dialogArt.paletteTarget]);}});
+  $('#save-frame').addEventListener('click',()=>{
+    if(!dialogArt?.ready){toast('当前浏览器未启用实时图形，无法导出画面。');return;}
+    try{
+      const output=document.createElement('canvas');output.width=1600;output.height=1800;const ctx=output.getContext('2d');const p=projects[projectIndex];
+      ctx.fillStyle='#0e0d12';ctx.fillRect(0,0,1600,1800);const gradient=ctx.createRadialGradient(800,770,0,800,770,650);gradient.addColorStop(0,p.bg);gradient.addColorStop(1,'#0e0d12');ctx.fillStyle=gradient;ctx.fillRect(0,0,1600,1800);
+      dialogArt.render(clock,true);
+      const source=dialogArt.canvas;const ratio=source.width/source.height;let dw=1400,dh=dw/ratio;if(dh>1400){dh=1400;dw=dh*ratio;}ctx.drawImage(source,(1600-dw)/2,120+(1400-dh)/2,dw,dh);
+      ctx.fillStyle='#e9dde9';ctx.font='42px Georgia,serif';ctx.fillText('L I M E N',90,113);ctx.font='18px monospace';ctx.fillStyle='#95829f';ctx.fillText('EXPERIMENT '+String(projectIndex+1).padStart(3,'0')+' / A MOMENT, COLLECTED.',90,160);
+      ctx.strokeStyle='#413445';ctx.beginPath();ctx.moveTo(90,1550);ctx.lineTo(1510,1550);ctx.stroke();ctx.fillStyle='#e9dde9';ctx.font='94px Georgia,serif';ctx.fillText(p.name,87,1670);ctx.font='18px monospace';ctx.fillStyle='#95829f';ctx.fillText('BEYOND THE VISIBLE. / '+new Date().toISOString().slice(0,10),90,1733);
+      output.toBlob(blob=>{if(!blob){toast('导出未完成，请重试。');return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='LIMEN-'+p.name.replaceAll(' ','-')+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);toast('这一瞬间，已为你收藏。');},'image/png');
+    }catch(e){toast('浏览器未允许导出画面，请检查下载权限。');}
+  });
+
+  // Reveal animations, a restrained magnetic cursor and document progress.
+  const reveals=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-inview');reveals.unobserve(e.target);}});},{threshold:.12});
+  $$('.reveal').forEach(el=>reveals.observe(el));
+  const cursor={x:-100,y:-100,rx:-100,ry:-100,enabled:false};
+  const ring=$('.cursor-ring'),dot=$('.cursor-dot');
+  const fineQuery=matchMedia('(pointer:fine) and (hover:hover)');
+  function setCursor(){cursor.enabled=fineQuery.matches&&!reduced;document.body.classList.toggle('has-custom-cursor',cursor.enabled);}
+  setCursor();fineQuery.addEventListener?.('change',setCursor);
+  document.addEventListener('pointermove',e=>{cursor.x=e.clientX;cursor.y=e.clientY;if(!cursor.enabled)return;dot.style.transform=`translate(${cursor.x}px,${cursor.y}px)`;const target=e.target.closest('[data-cursor],a,button');ring.classList.remove('is-link','is-view','is-drag');ring.querySelector('span').textContent='';if(target){const type=target.dataset.cursor;if(type==='view'){ring.classList.add('is-view');ring.querySelector('span').textContent='VIEW ↗';}else if(type==='drag'){ring.classList.add('is-drag');ring.querySelector('span').textContent='↔ DRAG';}else if(type==='play'&&!e.target.closest('button,a')){ring.classList.add('is-drag');ring.querySelector('span').textContent='FEEL';}else{ring.classList.add('is-link');}}},{passive:true});
+  document.addEventListener('pointerleave',()=>{cursor.x=-100;cursor.y=-100;dot.style.transform='translate(-100px,-100px)';});
+  $$('[data-magnetic]').forEach(el=>{el.addEventListener('pointermove',e=>{if(!cursor.enabled||motionPaused)return;const r=el.getBoundingClientRect();const x=(e.clientX-r.left-r.width/2)*.15,y=(e.clientY-r.top-r.height/2)*.22;el.style.transform=`translate(${x}px,${y}px)`;});el.addEventListener('pointerleave',()=>{el.style.transform='';});});
+  let scrollDirty=true;
+  window.addEventListener('scroll',()=>{scrollDirty=true;},{passive:true});
+  window.addEventListener('resize',()=>{scrollDirty=true;},{passive:true});
+  const updateClock=()=>{$('#local-clock').textContent=new Date().toLocaleTimeString('en-GB',{hour12:false});};updateClock();setInterval(updateClock,1000);
+  const motionButton=$('.motion-toggle');
+  function updateMotion(){document.body.classList.toggle('motion-paused',motionPaused);motionButton.setAttribute('aria-pressed',String(motionPaused));motionButton.querySelector('span').textContent=motionPaused?'恢复动态':'暂停动态';motionButton.querySelector('use').setAttribute('href',motionPaused?'#i-play':'#i-pause');artObjects.forEach(a=>a.dirty=true);waves.dirty=true;}
+  motionButton.addEventListener('click',()=>{motionPaused=!motionPaused;updateMotion();toast(motionPaused?'动态已暂停。此刻，也值得静静欣赏。':'光影继续流动。');});
+  reducedQuery.addEventListener?.('change',e=>{reduced=e.matches;motionPaused=reduced;setCursor();updateMotion();});updateMotion();
+  document.addEventListener('visibilitychange',()=>{lastFrame=0;if(audio.context){if(document.hidden)audio.context.suspend();else if(audio.enabled)audio.context.resume().catch(()=>{});}});
+
+  // Adapt quality after sustained slow frames; offscreen and hidden art sleeps.
+  let sampledTime=0,sampledFrames=0,qualityChecks=0,lastArtTick=0;
+  function animate(now){
+    requestAnimationFrame(animate);
+    if(document.hidden){lastFrame=0;return;}
+    const delta=lastFrame?Math.min((now-lastFrame)/1000,.08):.016;lastFrame=now;
+    if(!motionPaused)clock+=delta;
+    if(scrollDirty){const y=window.scrollY,max=document.documentElement.scrollHeight-innerHeight;$('.progress').style.transform=`scaleX(${max>0?y/max:0})`;$('.site-header').classList.toggle('scrolled',y>35);scrollDirty=false;}
+    if(cursor.enabled){const lerp=motionPaused?1:Math.min(1,delta*12);cursor.rx+=(cursor.x-cursor.rx)*lerp;cursor.ry+=(cursor.y-cursor.ry)*lerp;ring.style.transform=`translate(${cursor.rx}px,${cursor.ry}px)`;}
+    // Cap expensive rendering at 45 Hz without affecting pointer or scroll input.
+    if(now-lastArtTick>22||motionPaused){const artDelta=Math.min((now-lastArtTick)/1000,.12);lastArtTick=now;artObjects.forEach(a=>a.render(clock));waves.render(clock,artDelta);}
+    if(!motionPaused&&qualityChecks<3&&heroArt.visible){sampledTime+=delta;sampledFrames++;if(sampledTime>2.5){const fps=sampledFrames/sampledTime;if(fps<32){artObjects.forEach(a=>{if(!a.isDialog){a.scale=Math.max(.60,a.scale*.82);a.resize();}});}qualityChecks++;sampledTime=0;sampledFrames=0;}}
+  }
+  requestAnimationFrame(animate);
+  const begin=()=>{document.body.classList.add('is-ready');$('.intro').classList.add('is-done');setTimeout(()=>$('.intro').remove(),1200);};
+  setTimeout(begin,reduced?0:1050);
+  // A CSS fallback remains visible when WebGL is blocked or unavailable.
+  if(!heroArt.ready)setTimeout(()=>toast('当前使用轻量视觉模式。文字、导航与光波交互仍然可用。'),2400);
+})();
+</script>
+</body>
+</html>
